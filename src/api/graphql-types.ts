@@ -43,3 +43,21 @@ export interface GraphQLOpenPRsResponse {
 export interface ResolveThreadResponse {
   resolveReviewThread: { thread: { isResolved: boolean } };
 }
+
+export interface GraphQLViewerLoginResponse {
+  viewer: {
+    login: string;
+  };
+}
+
+export interface GraphQLSearchPRsResponse {
+  search: {
+    nodes: Array<{
+      number: number;
+      title: string;
+      author: { login: string } | null;
+      updatedAt: string;
+      reviewThreads: { totalCount: number };
+    }>;
+  };
+}

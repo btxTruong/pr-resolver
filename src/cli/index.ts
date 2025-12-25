@@ -5,6 +5,7 @@ import chalk from 'chalk';
 import { createRequire } from 'node:module';
 import { createAuthCommand } from './auth.js';
 import { createUpdateCommand } from './update.js';
+import { createMeCommand } from './me.js';
 import { handlePRCommand } from './pr.js';
 import { App } from '../ui/App.js';
 import { getDefaultShowResolved } from '../config/manager.js';
@@ -21,6 +22,7 @@ program
 
 program.addCommand(createAuthCommand());
 program.addCommand(createUpdateCommand());
+program.addCommand(createMeCommand());
 
 program
   .argument('[pr-number]', 'PR number to view (omit to list open PRs)')

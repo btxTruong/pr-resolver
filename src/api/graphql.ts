@@ -1,7 +1,7 @@
 import { graphql } from '@octokit/graphql';
-import { GET_PR_COMMENTS, GET_OPEN_PRS, RESOLVE_THREAD } from './queries.js';
+import { GET_PR_COMMENTS, GET_OPEN_PRS, RESOLVE_THREAD, GET_VIEWER_LOGIN, GET_USER_OPEN_PRS } from './queries.js';
 import { GraphQLError, validateToken, validateRepoParams, validatePRNumber, validateThreadId } from './validation.js';
-import type { GraphQLPRResponse, GraphQLOpenPRsResponse, ResolveThreadResponse, GraphQLCommentNode } from './graphql-types.js';
+import type { GraphQLPRResponse, GraphQLOpenPRsResponse, ResolveThreadResponse, GraphQLCommentNode, GraphQLViewerLoginResponse, GraphQLSearchPRsResponse } from './graphql-types.js';
 import type { PRData, ReviewThread, ReviewComment, OpenPR, ResolveResult } from '../types/index.js';
 
 export { GraphQLError } from './validation.js';
@@ -92,6 +92,52 @@ export async function fetchOpenPRs(token: string, owner: string, repo: string): 
     if (error instanceof GraphQLError) throw error;
     throw new GraphQLError(
       `Failed to fetch open PRs: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      'FETCH_FAILED',
+      error
+    );
+  }
+}
+
+export async function fetchViewerLogin(token: string): Promise<string> {
+  validateToken(token);
+
+  try {
+    const client = createClient(token);
+    const response = await client<GraphQLViewerLoginResponse>(GET_VIEWER_LOGIN);
+    return response.viewer.login;
+  } catch (error) {
+    if (error instanceof GraphQLError) throw error;
+    throw new GraphQLError(
+      `Failed to fetch viewer login: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      'FETCH_FAILED',
+      error
+    );
+  }
+}
+
+export async function fetchUserOpenPRs(token: string, owner: string, repo: string): Promise<OpenPR[]> {
+  validateToken(token);
+  validateRepoParams(owner, repo);
+
+  try {
+    const viewerLogin = await fetchViewerLogin(token);
+    const client = createClient(token);
+    const searchQuery = `repo:${owner}/${repo} is:pr is:open author:${viewerLogin}`;
+    const response = await client<GraphQLSearchPRsResponse>(GET_USER_OPEN_PRS, { searchQuery });
+
+    return response.search.nodes
+      .filter((node) => node.number !== undefined)
+      .map((pr) => ({
+        number: pr.number,
+        title: pr.title,
+        author: pr.author?.login ?? 'ghost',
+        updatedAt: pr.updatedAt,
+        threadCount: pr.reviewThreads.totalCount,
+      }));
+  } catch (error) {
+    if (error instanceof GraphQLError) throw error;
+    throw new GraphQLError(
+      `Failed to fetch user's open PRs: ${error instanceof Error ? error.message : 'Unknown error'}`,
       'FETCH_FAILED',
       error
     );

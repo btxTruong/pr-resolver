@@ -52,3 +52,29 @@ export const RESOLVE_THREAD = `
     }
   }
 `;
+
+export const GET_VIEWER_LOGIN = `
+  query GetViewerLogin {
+    viewer {
+      login
+    }
+  }
+`;
+
+export const GET_USER_OPEN_PRS = `
+  query GetUserOpenPRs($searchQuery: String!) {
+    search(query: $searchQuery, type: ISSUE, first: 20) {
+      nodes {
+        ... on PullRequest {
+          number
+          title
+          author { login }
+          updatedAt
+          reviewThreads(first: 1) {
+            totalCount
+          }
+        }
+      }
+    }
+  }
+`;
