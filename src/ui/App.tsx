@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { Box, Text, useInput, useApp } from 'ink';
+import { Box, Text, useInput, useApp, useStdout } from 'ink';
 import { CommentList } from './CommentList.js';
 import { StatusBar } from './StatusBar.js';
 import { resolveThread, resolveAllThreads } from '../api/graphql.js';
@@ -13,6 +13,7 @@ interface AppProps {
 
 export function App({ prData, token, initialShowResolved }: AppProps) {
   const { exit } = useApp();
+  const { stdout } = useStdout();
   const [threads, setThreads] = useState<ReviewThread[]>(prData.reviewThreads);
   const [showResolved, setShowResolved] = useState(initialShowResolved);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -20,6 +21,8 @@ export function App({ prData, token, initialShowResolved }: AppProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const messageTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const terminalHeight = stdout?.rows ?? 24;
 
   const visibleThreads = showResolved
     ? threads
@@ -111,7 +114,7 @@ export function App({ prData, token, initialShowResolved }: AppProps) {
       return;
     }
 
-    if (input === 'R') {
+    if (input === 'x') {
       handleResolveAll();
       return;
     }
@@ -132,7 +135,7 @@ export function App({ prData, token, initialShowResolved }: AppProps) {
   });
 
   return (
-    <Box flexDirection="column">
+    <Box flexDirection="column" minHeight={terminalHeight}>
       <Box borderStyle="round" paddingX={1}>
         <Text bold>PR #{prData.number}: {prData.title}</Text>
       </Box>
@@ -149,12 +152,14 @@ export function App({ prData, token, initialShowResolved }: AppProps) {
         </Box>
       )}
 
-      <CommentList
-        reviewThreads={threads}
-        showResolved={showResolved}
-        selectedIndex={selectedIndex}
-        expandedIndex={expandedIndex}
-      />
+      <Box flexDirection="column" flexGrow={1}>
+        <CommentList
+          reviewThreads={threads}
+          showResolved={showResolved}
+          selectedIndex={selectedIndex}
+          expandedIndex={expandedIndex}
+        />
+      </Box>
 
       <StatusBar
         showResolved={showResolved}

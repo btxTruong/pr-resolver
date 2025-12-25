@@ -43,7 +43,7 @@ pr-resolver update
 | ↑/↓ | Navigate |
 | Enter | Expand thread |
 | r | Resolve selected |
-| R | Resolve all |
+| x | Resolve all |
 | a | Toggle resolved |
 | q | Quit |
 
