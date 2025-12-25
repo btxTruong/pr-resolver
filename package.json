@@ -1,6 +1,6 @@
 {
   "name": "pr-resolver",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "CLI to view and resolve GitHub PR comments",
   "type": "module",
   "main": "dist/cli/index.js",
