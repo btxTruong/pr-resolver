@@ -13,27 +13,39 @@
     "lint": "eslint src --ext .ts,.tsx",
     "prepublishOnly": "npm run build"
   },
-  "keywords": ["github", "pr", "pull-request", "cli", "review"],
-  "author": "",
+  "keywords": ["github", "pr", "pull-request", "cli", "review", "comments"],
+  "author": "truongbui",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/btxTruong/pr-resolver.git"
+  },
+  "bugs": {
+    "url": "https://github.com/btxTruong/pr-resolver/issues"
+  },
+  "homepage": "https://github.com/btxTruong/pr-resolver#readme",
   "engines": {
     "node": ">=18.0.0"
   },
+  "files": [
+    "dist",
+    "bin"
+  ],
   "dependencies": {
-    "commander": "14.0.2",
     "@octokit/graphql": "9.0.3",
-    "ink": "6.6.0",
-    "react": "19.2.3",
+    "chalk": "5.6.2",
+    "commander": "14.0.2",
     "conf": "15.0.2",
-    "chalk": "5.6.2"
+    "ink": "6.6.0",
+    "react": "19.2.3"
   },
   "devDependencies": {
-    "typescript": "5.9.3",
-    "@types/react": "19.2.7",
     "@types/node": "25.0.3",
-    "tsx": "4.21.0",
-    "eslint": "9.39.2",
+    "@types/react": "19.2.7",
     "@typescript-eslint/eslint-plugin": "8.50.1",
-    "@typescript-eslint/parser": "8.50.1"
+    "@typescript-eslint/parser": "8.50.1",
+    "eslint": "9.39.2",
+    "tsx": "4.21.0",
+    "typescript": "5.9.3"
   }
 }
