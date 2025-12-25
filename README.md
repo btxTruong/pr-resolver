@@ -31,6 +31,9 @@ pr-resolver
 
 # Include resolved comments
 pr-resolver 123 --all
+
+# Update to latest version
+pr-resolver update
 ```
 
 ## Keybindings
