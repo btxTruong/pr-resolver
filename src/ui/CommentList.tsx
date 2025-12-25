@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Text } from 'ink';
 import { ThreadItem } from './ThreadItem.js';
-import type { ReviewThread, ReviewComment } from '../types/index.js';
+import type { ReviewThread } from '../types/index.js';
 
 interface FileGroup {
   path: string;
@@ -10,7 +10,6 @@ interface FileGroup {
 
 interface CommentListProps {
   reviewThreads: ReviewThread[];
-  generalComments: ReviewComment[];
   showResolved: boolean;
   selectedIndex: number;
   expandedIndex: number | null;
@@ -39,7 +38,6 @@ function groupByFile(threads: ReviewThread[]): FileGroup[] {
 
 export function CommentList({
   reviewThreads,
-  generalComments,
   showResolved,
   selectedIndex,
   expandedIndex,
@@ -73,21 +71,7 @@ export function CommentList({
         </Box>
       ))}
 
-      {generalComments.length > 0 && (
-        <Box flexDirection="column" marginTop={1}>
-          <Text bold color="magenta">
-            💬 General Comments ({generalComments.length})
-          </Text>
-          {generalComments.map((comment) => (
-            <Box key={`${comment.author}-${comment.createdAt}`} marginLeft={2}>
-              <Text>  @{comment.author}: </Text>
-              <Text dimColor>{comment.body}</Text>
-            </Box>
-          ))}
-        </Box>
-      )}
-
-      {filteredThreads.length === 0 && generalComments.length === 0 && (
+      {filteredThreads.length === 0 && (
         <Text color="green">✓ No comments to show</Text>
       )}
     </Box>

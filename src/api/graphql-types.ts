@@ -22,9 +22,6 @@ export interface GraphQLPRResponse {
       reviewThreads: {
         nodes: GraphQLThreadNode[];
       };
-      comments: {
-        nodes: GraphQLCommentNode[];
-      };
     } | null;
   } | null;
 }

@@ -19,13 +19,6 @@ export const GET_PR_COMMENTS = `
             }
           }
         }
-        comments(first: 100) {
-          nodes {
-            body
-            author { login }
-            createdAt
-          }
-        }
       }
     }
   }

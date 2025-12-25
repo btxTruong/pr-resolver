@@ -34,7 +34,6 @@ export interface PRData {
   title: string;
   number: number;
   reviewThreads: ReviewThread[];
-  generalComments: ReviewComment[];
 }
 
 export interface OpenPR {

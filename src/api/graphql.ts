@@ -58,7 +58,6 @@ export async function fetchPRComments(
       title: pullRequest.title,
       number: pullRequest.number,
       reviewThreads,
-      generalComments: pullRequest.comments.nodes.map(mapComment),
     };
   } catch (error) {
     if (error instanceof GraphQLError) throw error;

@@ -151,7 +151,6 @@ export function App({ prData, token, initialShowResolved }: AppProps) {
 
       <CommentList
         reviewThreads={threads}
-        generalComments={prData.generalComments}
         showResolved={showResolved}
         selectedIndex={selectedIndex}
         expandedIndex={expandedIndex}
