@@ -2,19 +2,25 @@ import { Command } from 'commander';
 import { render } from 'ink';
 import React from 'react';
 import chalk from 'chalk';
+import { createRequire } from 'node:module';
 import { createAuthCommand } from './auth.js';
+import { createUpdateCommand } from './update.js';
 import { handlePRCommand } from './pr.js';
 import { App } from '../ui/App.js';
 import { getDefaultShowResolved } from '../config/manager.js';
+
+const require = createRequire(import.meta.url);
+const packageJson = require('../../package.json');
 
 const program = new Command();
 
 program
   .name('pr-resolver')
   .description('View and resolve GitHub PR comments')
-  .version('0.1.0');
+  .version(packageJson.version);
 
 program.addCommand(createAuthCommand());
+program.addCommand(createUpdateCommand());
 
 program
   .argument('[pr-number]', 'PR number to view (omit to list open PRs)')
