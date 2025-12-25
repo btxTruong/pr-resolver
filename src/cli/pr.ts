@@ -79,8 +79,9 @@ async function handlePRView(
   token: string,
   repoInfo: RepoInfo,
   prNumber: number,
-  _options: PRCommandOptions
+  options: PRCommandOptions
 ): Promise<PRData | null> {
+  void options;
   console.log(chalk.dim(`Fetching PR #${prNumber}...`));
 
   try {
