@@ -8,6 +8,11 @@ interface PRCommandOptions {
   all?: boolean;
 }
 
+export interface PRCommandResult {
+  prData: PRData;
+  token: string;
+}
+
 function resolveToken(repoInfo: RepoInfo): string | null {
   const orgMatch = findAccountForOrg(repoInfo.owner);
   if (orgMatch) {
@@ -25,7 +30,7 @@ function resolveToken(repoInfo: RepoInfo): string | null {
 export async function handlePRCommand(
   prNumber: number | undefined,
   options: PRCommandOptions
-): Promise<PRData | null> {
+): Promise<PRCommandResult | null> {
   const repoInfo = detectRepo();
   if (!repoInfo) {
     console.error(chalk.red('Not in a git repository or no origin remote found'));
@@ -43,10 +48,11 @@ export async function handlePRCommand(
   console.log(chalk.dim(`Repository: ${repoInfo.owner}/${repoInfo.repo}`));
 
   if (prNumber === undefined) {
-    return await handlePRList(token, repoInfo);
+    await handlePRList(token, repoInfo);
+    return null;
   }
 
-  return await handlePRView(token, repoInfo, prNumber, options);
+  return await handlePRView(token, repoInfo, prNumber);
 }
 
 async function handlePRList(token: string, repoInfo: RepoInfo): Promise<null> {
@@ -78,16 +84,13 @@ async function handlePRList(token: string, repoInfo: RepoInfo): Promise<null> {
 async function handlePRView(
   token: string,
   repoInfo: RepoInfo,
-  prNumber: number,
-  options: PRCommandOptions
-): Promise<PRData | null> {
-  void options;
+  prNumber: number
+): Promise<PRCommandResult | null> {
   console.log(chalk.dim(`Fetching PR #${prNumber}...`));
 
   try {
     const prData = await fetchPRComments(token, repoInfo.owner, repoInfo.repo, prNumber);
-
-    return prData;
+    return { prData, token };
   } catch (error) {
     handleAPIError(error);
     return null;
@@ -116,12 +119,4 @@ function handleAPIError(error: unknown): never {
     console.error(chalk.red('Unknown error occurred'));
   }
   process.exit(1);
-}
-
-export function getRepoInfo(): RepoInfo | null {
-  return detectRepo();
-}
-
-export function getToken(repoInfo: RepoInfo): string | null {
-  return resolveToken(repoInfo);
 }
