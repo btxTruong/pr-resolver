@@ -36,3 +36,16 @@ export interface PRData {
   reviewThreads: ReviewThread[];
   generalComments: ReviewComment[];
 }
+
+export interface OpenPR {
+  number: number;
+  title: string;
+  author: string;
+  updatedAt: string;
+  threadCount: number;
+}
+
+export interface ResolveResult {
+  succeeded: string[];
+  failed: Array<{ id: string; error: string }>;
+}
