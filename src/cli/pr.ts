@@ -4,10 +4,6 @@ import { findAccountForOrg, getFirstAccount } from '../config/manager.js';
 import { fetchPRComments, fetchOpenPRs, GraphQLError } from '../api/graphql.js';
 import type { PRData, RepoInfo } from '../types/index.js';
 
-interface PRCommandOptions {
-  all?: boolean;
-}
-
 export interface PRCommandResult {
   prData: PRData;
   token: string;
@@ -28,8 +24,7 @@ function resolveToken(repoInfo: RepoInfo): string | null {
 }
 
 export async function handlePRCommand(
-  prNumber: number | undefined,
-  options: PRCommandOptions
+  prNumber: number | undefined
 ): Promise<PRCommandResult | null> {
   const repoInfo = detectRepo();
   if (!repoInfo) {

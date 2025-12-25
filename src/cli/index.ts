@@ -28,7 +28,7 @@ program
       process.exit(1);
     }
 
-    const result = await handlePRCommand(prNumber, options);
+    const result = await handlePRCommand(prNumber);
 
     if (result) {
       const showResolved = options.all ?? getDefaultShowResolved();
