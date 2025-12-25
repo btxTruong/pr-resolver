@@ -59,9 +59,11 @@ async function prompt(question: string, masked = false): Promise<string> {
           } else if (char === '\u007F' || char === '\b') {
             if (input.length > 0) {
               input = input.slice(0, -1);
+              process.stdout.write('\b \b');
             }
           } else {
             input += char;
+            process.stdout.write('*');
           }
         };
 

@@ -14,7 +14,7 @@ Add a GitHub account:
 
 ```bash
 pr-resolver auth add personal
-# Enter your GitHub token when prompted
+# Enter your GitHub token when prompted (masked input)
 # Optionally enter orgs (comma-separated)
 ```
 
@@ -28,6 +28,9 @@ pr-resolver 123
 
 # List open PRs
 pr-resolver
+
+# List your open PRs only
+pr-resolver me
 
 # Include resolved comments
 pr-resolver 123 --all
