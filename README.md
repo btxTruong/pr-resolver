@@ -1,4 +1,7 @@
 # pr-resolver
+[![npm version](https://badgen.net/npm/v/pr-resolver)](https://www.npmjs.com/package/pr-resolver)
+[![npm downloads](https://badgen.net/npm/dm/pr-resolver)](https://www.npmjs.com/package/pr-resolver)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 CLI to view and resolve GitHub PR review comments.
 
