@@ -26,17 +26,31 @@ export function App({ prData, token, owner, repo, initialShowResolved }: AppProp
 
   const terminalHeight = stdout?.rows ?? 24;
 
-  const visibleThreads = showResolved
+  const filteredThreads = showResolved
     ? threads
     : threads.filter((thread) => !thread.isResolved);
+
+  const displayOrderedThreads = React.useMemo(() => {
+    const groups = new Map<string, ReviewThread[]>();
+    for (const thread of filteredThreads) {
+      const path = thread.path ?? '(no file)';
+      const existing = groups.get(path);
+      if (existing) {
+        existing.push(thread);
+      } else {
+        groups.set(path, [thread]);
+      }
+    }
+    return Array.from(groups.values()).flat();
+  }, [filteredThreads]);
 
   const unresolvedCount = threads.filter((thread) => !thread.isResolved).length;
 
   useEffect(() => {
-    if (selectedIndex >= visibleThreads.length && visibleThreads.length > 0) {
-      setSelectedIndex(visibleThreads.length - 1);
+    if (selectedIndex >= displayOrderedThreads.length && displayOrderedThreads.length > 0) {
+      setSelectedIndex(displayOrderedThreads.length - 1);
     }
-  }, [visibleThreads.length, selectedIndex]);
+  }, [displayOrderedThreads.length, selectedIndex]);
 
   useEffect(() => {
     return () => {
@@ -55,9 +69,9 @@ export function App({ prData, token, owner, repo, initialShowResolved }: AppProp
   }, []);
 
   const handleResolve = useCallback(async () => {
-    if (visibleThreads.length === 0) return;
+    if (displayOrderedThreads.length === 0) return;
 
-    const thread = visibleThreads[selectedIndex];
+    const thread = displayOrderedThreads[selectedIndex];
     if (!thread || thread.isResolved) return;
 
     setIsLoading(true);
@@ -72,7 +86,7 @@ export function App({ prData, token, owner, repo, initialShowResolved }: AppProp
       showMessage('✗ Failed to resolve');
     }
     setIsLoading(false);
-  }, [token, visibleThreads, selectedIndex, showMessage]);
+  }, [token, displayOrderedThreads, selectedIndex, showMessage]);
 
   const handleResolveAll = useCallback(async () => {
     const unresolved = threads.filter((thread) => !thread.isResolved);
@@ -120,9 +134,9 @@ export function App({ prData, token, owner, repo, initialShowResolved }: AppProp
   }, [token, owner, repo, prData.number, showMessage]);
 
   const handleUnresolve = useCallback(async () => {
-    if (visibleThreads.length === 0) return;
+    if (displayOrderedThreads.length === 0) return;
 
-    const thread = visibleThreads[selectedIndex];
+    const thread = displayOrderedThreads[selectedIndex];
     if (!thread || !thread.isResolved) return;
 
     setIsLoading(true);
@@ -137,7 +151,7 @@ export function App({ prData, token, owner, repo, initialShowResolved }: AppProp
       showMessage('✗ Failed to unresolve');
     }
     setIsLoading(false);
-  }, [token, visibleThreads, selectedIndex, showMessage]);
+  }, [token, displayOrderedThreads, selectedIndex, showMessage]);
 
   useInput((input, key) => {
     if (isLoading) return;
@@ -174,17 +188,17 @@ export function App({ prData, token, owner, repo, initialShowResolved }: AppProp
       return;
     }
 
-    if (key.upArrow && visibleThreads.length > 0) {
+    if (key.upArrow && displayOrderedThreads.length > 0) {
       setSelectedIndex((previous) => Math.max(0, previous - 1));
       setExpandedIndex(null);
     }
 
-    if (key.downArrow && visibleThreads.length > 0) {
-      setSelectedIndex((previous) => Math.min(visibleThreads.length - 1, previous + 1));
+    if (key.downArrow && displayOrderedThreads.length > 0) {
+      setSelectedIndex((previous) => Math.min(displayOrderedThreads.length - 1, previous + 1));
       setExpandedIndex(null);
     }
 
-    if (key.return && visibleThreads.length > 0) {
+    if (key.return && displayOrderedThreads.length > 0) {
       setExpandedIndex((previous) => (previous === selectedIndex ? null : selectedIndex));
     }
   });
