@@ -1,7 +1,7 @@
 import { graphql } from '@octokit/graphql';
-import { GET_PR_COMMENTS, GET_OPEN_PRS, RESOLVE_THREAD, GET_VIEWER_LOGIN, GET_USER_OPEN_PRS } from './queries.js';
+import { GET_PR_COMMENTS, GET_OPEN_PRS, RESOLVE_THREAD, UNRESOLVE_THREAD, GET_VIEWER_LOGIN, GET_USER_OPEN_PRS } from './queries.js';
 import { GraphQLError, validateToken, validateRepoParams, validatePRNumber, validateThreadId } from './validation.js';
-import type { GraphQLPRResponse, GraphQLOpenPRsResponse, ResolveThreadResponse, GraphQLCommentNode, GraphQLViewerLoginResponse, GraphQLSearchPRsResponse } from './graphql-types.js';
+import type { GraphQLPRResponse, GraphQLOpenPRsResponse, ResolveThreadResponse, UnresolveThreadResponse, GraphQLCommentNode, GraphQLViewerLoginResponse, GraphQLSearchPRsResponse } from './graphql-types.js';
 import type { PRData, ReviewThread, ReviewComment, OpenPR, ResolveResult } from '../types/index.js';
 
 export { GraphQLError } from './validation.js';
@@ -157,6 +157,24 @@ export async function resolveThread(token: string, threadId: string): Promise<bo
     throw new GraphQLError(
       `Failed to resolve thread: ${error instanceof Error ? error.message : 'Unknown error'}`,
       'RESOLVE_FAILED',
+      error
+    );
+  }
+}
+
+export async function unresolveThread(token: string, threadId: string): Promise<boolean> {
+  validateToken(token);
+  validateThreadId(threadId);
+
+  try {
+    const client = createClient(token);
+    const response = await client<UnresolveThreadResponse>(UNRESOLVE_THREAD, { threadId });
+    return !response.unresolveReviewThread.thread.isResolved;
+  } catch (error) {
+    if (error instanceof GraphQLError) throw error;
+    throw new GraphQLError(
+      `Failed to unresolve thread: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      'UNRESOLVE_FAILED',
       error
     );
   }

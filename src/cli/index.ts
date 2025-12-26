@@ -44,6 +44,8 @@ program
         React.createElement(App, {
           prData: result.prData,
           token: result.token,
+          owner: result.owner,
+          repo: result.repo,
           initialShowResolved: showResolved,
         })
       );

@@ -44,6 +44,10 @@ export interface ResolveThreadResponse {
   resolveReviewThread: { thread: { isResolved: boolean } };
 }
 
+export interface UnresolveThreadResponse {
+  unresolveReviewThread: { thread: { isResolved: boolean } };
+}
+
 export interface GraphQLViewerLoginResponse {
   viewer: {
     login: string;

@@ -7,6 +7,8 @@ import type { PRData, RepoInfo } from '../types/index.js';
 export interface PRCommandResult {
   prData: PRData;
   token: string;
+  owner: string;
+  repo: string;
 }
 
 export async function handlePRCommand(
@@ -71,7 +73,7 @@ async function handlePRView(
 
   try {
     const prData = await fetchPRComments(token, repoInfo.owner, repoInfo.repo, prNumber);
-    return { prData, token };
+    return { prData, token, owner: repoInfo.owner, repo: repoInfo.repo };
   } catch (error) {
     handleAPIError(error);
     return null;

@@ -20,7 +20,7 @@ export function StatusBar({ showResolved, totalThreads, unresolvedCount }: Statu
     >
       <Box flexGrow={1}>
         <Text dimColor>
-          [↑↓] Navigate  [Enter] Expand  [r] Resolve  [x] Resolve All  [a] Toggle resolved  [q] Quit
+          [↑↓] Navigate  [Enter] Expand  [r] Resolve  [u] Unresolve  [x] Resolve All  [f] Refresh  [a] Toggle  [q] Quit
         </Text>
       </Box>
       <Box>

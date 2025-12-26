@@ -2,16 +2,18 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Box, Text, useInput, useApp, useStdout } from 'ink';
 import { CommentList } from './CommentList.js';
 import { StatusBar } from './StatusBar.js';
-import { resolveThread, resolveAllThreads } from '../api/graphql.js';
+import { resolveThread, resolveAllThreads, unresolveThread, fetchPRComments } from '../api/graphql.js';
 import type { PRData, ReviewThread } from '../types/index.js';
 
 interface AppProps {
   prData: PRData;
   token: string;
+  owner: string;
+  repo: string;
   initialShowResolved: boolean;
 }
 
-export function App({ prData, token, initialShowResolved }: AppProps) {
+export function App({ prData, token, owner, repo, initialShowResolved }: AppProps) {
   const { exit } = useApp();
   const { stdout } = useStdout();
   const [threads, setThreads] = useState<ReviewThread[]>(prData.reviewThreads);
@@ -35,6 +37,14 @@ export function App({ prData, token, initialShowResolved }: AppProps) {
       setSelectedIndex(visibleThreads.length - 1);
     }
   }, [visibleThreads.length, selectedIndex]);
+
+  useEffect(() => {
+    return () => {
+      if (messageTimeoutRef.current) {
+        clearTimeout(messageTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const showMessage = useCallback((msg: string) => {
     if (messageTimeoutRef.current) {
@@ -94,6 +104,41 @@ export function App({ prData, token, initialShowResolved }: AppProps) {
     setIsLoading(false);
   }, [token, threads, showMessage]);
 
+  const handleRefresh = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const freshData = await fetchPRComments(token, owner, repo, prData.number);
+      setThreads(freshData.reviewThreads);
+      setSelectedIndex(0);
+      setExpandedIndex(null);
+      showMessage('✓ Refreshed');
+    } catch (error) {
+      console.error('Failed to refresh:', error);
+      showMessage('✗ Failed to refresh');
+    }
+    setIsLoading(false);
+  }, [token, owner, repo, prData.number, showMessage]);
+
+  const handleUnresolve = useCallback(async () => {
+    if (visibleThreads.length === 0) return;
+
+    const thread = visibleThreads[selectedIndex];
+    if (!thread || !thread.isResolved) return;
+
+    setIsLoading(true);
+    try {
+      await unresolveThread(token, thread.id);
+      setThreads((previous) =>
+        previous.map((item) => (item.id === thread.id ? { ...item, isResolved: false } : item))
+      );
+      showMessage('✓ Thread unresolved');
+    } catch (error) {
+      console.error('Failed to unresolve thread:', error);
+      showMessage('✗ Failed to unresolve');
+    }
+    setIsLoading(false);
+  }, [token, visibleThreads, selectedIndex, showMessage]);
+
   useInput((input, key) => {
     if (isLoading) return;
 
@@ -116,6 +161,16 @@ export function App({ prData, token, initialShowResolved }: AppProps) {
 
     if (input === 'x') {
       handleResolveAll();
+      return;
+    }
+
+    if (input === 'u') {
+      handleUnresolve();
+      return;
+    }
+
+    if (input === 'f') {
+      handleRefresh();
       return;
     }
 

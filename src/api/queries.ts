@@ -53,6 +53,17 @@ export const RESOLVE_THREAD = `
   }
 `;
 
+export const UNRESOLVE_THREAD = `
+  mutation UnresolveThread($threadId: ID!) {
+    unresolveReviewThread(input: {threadId: $threadId}) {
+      thread {
+        id
+        isResolved
+      }
+    }
+  }
+`;
+
 export const GET_VIEWER_LOGIN = `
   query GetViewerLogin {
     viewer {

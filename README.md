@@ -49,7 +49,9 @@ pr-resolver update
 | ↑/↓ | Navigate |
 | Enter | Expand thread |
 | r | Resolve selected |
+| u | Unresolve selected |
 | x | Resolve all |
+| f | Refresh (re-fetch) |
 | a | Toggle resolved |
 | q | Quit |
 
